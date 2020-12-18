@@ -2,6 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
 const postsRouter = require('./routes/post');
 const {
     getPosts
@@ -11,7 +13,11 @@ const app = express();
 dotenv.config();
 
 //db 
-mongoose.connect(process.env.MONGODB_RUI).then(_ => {
+//MONGODB_RUI=mongodb://localhost/nodejsapi
+
+mongoose.connect(process.env.MONGODB_RUI, {
+    useNewUrlParser: true
+}).then(_ => {
     console.log('DB Connected!!');
 });
 
@@ -22,6 +28,8 @@ mongoose.connection.on('error', error => {
 
 // middlewares 
 app.use(morgan("dev"));
+app.use(bodyParser.json());
+app.use(expressValidator());
 app.use('/', postsRouter)
 
 const port = process.env.PORT || 8080;
